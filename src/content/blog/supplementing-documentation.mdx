@@ -1,0 +1,124 @@
+---
+title: The Best Content to Supplement Your API Documentation
+subtitle: >-
+  While having accurate, up-to-date documentation is vital, it’s not enough. Creating content to support your documentation is a great way to help users solve their own problems and get started faster.
+date: '2022-04-29T00:00:00.000Z'
+coverImage: 
+type: blog
+author: Karl Hughes
+---
+
+I started learning to code over ten years ago. As a self-taught developer, I picked up most of my knowledge from programmers who left breadcrumbs on Stack Overflow or wrote tutorials online. Early in my career, I often found documentation overwhelming. Without enough contextual knowledge, I struggled to turn raw endpoints into useful applications, so I looked for more complete solutions.
+
+Documentation has come a long way since then, as have the supporting resources commonly released along with it. While [following an accepted standard](https://apisyouwonthate.com/blog/theres-no-reason-to-write-openapi-by-hand) and having [comprehensive, honest documentation](https://apisyouwonthate.com/blog/keeping-documentation-honest) are essential first steps, users of public APIs expect more: tutorials, videos, forums, and SDKs among others. 
+
+This piece will share why more API builders are going beyond simple documentation for their applications. I’ll share some of the types of supplementary content I see most often and my insights into which content you should start with.
+
+## Why Go Beyond Documentation?
+
+> “Good documentation is only the starting point. Your users' expertise and industry knowledge can vary greatly, so you should also create educational content like guides or video tutorials to bring users up to speed on the concepts around your product or walk them through complex processes.” - [Anna Tsolakou](https://dev.to/tsolakoua/how-devrel-makes-your-api-irresistible-56cf), Developer Advocate at [Amadeus for Developers](https://developers.amadeus.com/)
+
+It takes a lot of time and effort to produce content to supplement your docs, so the first question is, “Is it worth it?”
+
+First, consider your API’s userbase.
+
+> “Reference documentation is important, but it is probably the last thing a new user cares about. Building docs that understand the progression from new user to advanced user are the best.” - Aidan Cunniffe, CEO at [Optic](https://www.useoptic.com/)
+
+Many APIs need to be accessible to junior developers, developers inexperienced in REST/GraphQL conventions, or non-developers. With the number of [low and no-code tools proliferating](https://stackoverflow.blog/2021/06/09/using-low-code-tools-to-iterate-products-faster/), there’s a whole new class of “API hackers” out there using APIs without a ton of experience in software development.
+
+Even if you only intend for your API to be used by experienced, senior developers, there’s a strong case for supplementing your documentation with other content. First, not everyone takes to a written medium. Some of us learn better from videos or interactive content.
+
+Second, API documentation rarely tells a user what to do when something goes wrong. Should they contact support? Post on Stack Overflow? Rant on Twitter?
+
+This is where a forum or community can help supplement your docs.
+
+Next, API documentation is often [focused on the “how” and not the “why”](https://stackoverflow.blog/2021/06/08/podcast-345-a-good-software-tutorial-explains-the-how-a-great-one-explains-the-why/), but the “why” is really important if you want to help developers see creative use cases for your API.
+
+Finally, content that supplements your documentation can also help with discoverability. “Don't forget,” Dan Moore, Head of Developer Relations at [FusionAuth](https://fusionauth.io/) told me, “most developers are going to use one interface for your documentation: Google.”
+
+Whether it’s [long-form technical content written for search engines](https://draft.dev/learn/seo-keyword-opportunities-in-developer-marketing), videos on YouTube, or workshops at conferences, the more content you have surrounding your API, the more likely users are to find and try it.
+
+## The Best Content to Supplement Your API Docs
+
+If you buy my argument that you should create more content surrounding your API, the next obvious question is, “Where do I start?”
+
+I’ve worked with over 80 developer tools companies to help with their content creation efforts over the past two years. While every company is different, I have strong opinions as a developer and API builder about which types of content are most valuable to prioritize first.
+
+So, let’s look at some of the best types of content to supplement your API docs. If I were starting a new API today, here’s how I would prioritize my efforts:
+
+### 1. SDK/API Client
+
+> “Releasing your demo apps and SDKs as open-source is a helpful way to build transparency and trust with the community.” - Anna Tsolakou
+
+A good SDK allows users to bypass your API docs entirely and start building right away. While abstracting some of the lower-level operations away might remove a bit of flexibility, an SDK or API client is table stakes for a public API. For a good example of how you can integrate your SDK into your documentation, look at [Stripe’s API Library section of their documentation](https://stripe.com/docs/libraries).
+
+The biggest challenge here is the time required to build and maintain a comprehensive set of SDKs.
+
+You’ll probably have to support at least 5-10 languages to cover the majority of users, but you may not have expertise in-house for all of them. Tools like [OpenAPI generator](https://github.com/OpenAPITools/openapi-generator) can help, but it’s also a good idea to make your SDKs open source so your users can report issues as they find them.
+
+### 2. Tutorials and Guides
+
+> “API documentation is similar to a cookbook. Your API enables a huge variety of applications which are like prepared dishes enabled by combinations of endpoint ingredients…You can shorten the on-ramp by providing practical guides and simple examples.” - [Julia Seidman](https://blog.stoplight.io/your-api-reference-is-more-than-a-list-of-ingredients), Technical Content Consultant
+
+Tutorials are probably the next most important supplement to your docs. As I mentioned above, [a good technical tutorial](https://draft.dev/learn/technical-tutorials) will focus on the “why,” helping users understand how to stitch your API together in a useful way. Nate Lee, the Founder of [Speedscale](https://speedscale.com/) agreed, “Most API docs all include example calls, but following a specific use case can be great, especially if it matches what most users will want to do.”
+
+Keeping tutorials up-to-date can be a challenge. You’ll need writers who can cover many languages and frameworks if you want to build tutorials around all the situations your users are likely to encounter.
+
+One company doing tutorials well is [DigitalOcean](https://www.digitalocean.com/community/tutorials). “It's always great to find one of their articles,” Dan Moore told me. “The instructions have rarely failed me.”
+
+### 3. Community Forum or Slack Group
+
+Once you have more than a handful of users, you should move from one-on-one to group support. Typically, this is done through a forum or chat group.
+
+I prefer forums because the content isn’t as transient, and as Dan Moore pointed out to me, “[a forum] is full of timestamped questions and is searchable by Google.” So while his team at FusionAuth spends time moderating and answering questions, their forum also draws new users to their site.
+
+Building an active, engaged community is a lot of work. Anna Tsolakou pointed out that, “launching a community channel is easy. The real trick is to keep it lively and engaging.”
+
+Having a community that’s a ghost town is as bad as having no community at all, so plan to invest time seeding questions and answers, asking members to participate, and incentivizing participants.
+
+### 4. Interactive Docs or Postman Collections
+
+Complete tutorials are a great way to showcase your API’s use cases, but interactive documentation (or [Postman collections](https://learning.postman.com/docs/getting-started/creating-the-first-collection)) will help users see how your API works in practice. I especially like docs that allow you to manipulate calls and retrieve real data from your web browser.
+
+Interactive documentation like this requires effort to maintain, and it might not be right for certain APIs. If your API contains sensitive information or OAuth tokens for authentication, you might need to be a bit more careful, but your users will appreciate how quickly they can test your API.
+
+### 5. Architecture Explanations
+
+Most API documentation jumps straight into “Getting Started.” The authors expect you to be familiar with the product and domain model, but that might not be the case.
+
+I remember a former boss asking me to integrate an obscure product whose poorly-documented API gave me no insight into how their data model was constructed. I had to contact their support to figure out the structure before I could even use the service.
+
+Dan Moore agreed with me on this point. “Higher-level _why_ docs are helpful for folks who want to dig into the choices that were made,” he told me, adding that making these architecture documents visual has helped their users. “We use [sequence diagrams] extensively and have heard praise from customers and users.”
+
+If you’re having trouble deciding what should be included in your public architecture documentation, try explaining your API to a software engineer completely outside your industry. You’ll find that many of the things you find obvious are not quite so clear to them.
+
+### 6. Videos
+
+I’m bullish on video for developers. While my generation learned through tutorials, books, and StackOverflow, things are changing. The next generation of developers is video-native, turning to YouTube or course platforms to learn how to use new tools and build apps.
+
+For API developers, video is a great way to show users what they can do with your app. “Video and demo apps help developers choose your API,” Aidan Cunniffe told me. “This content should highlight what your API is capable of doing…it's like the product demo for your API.”
+
+AWS does a great job using [video content to demonstrate its services on YouTube](https://www.youtube.com/user/AmazonWebServices). “Their re:invent videos have info that you simply won’t find in the written docs,” Dan Moore added.
+
+That said, video has its limitations. Users can’t copy/paste code from videos, and as Nate Lee pointed out, “Attention spans for videos are rather limited.” This leads video creators to favor brevity over completeness.
+
+### 7. Well-Maintained Demo Applications
+
+> “Demo applications give developers a taste of what your APIs can do and can help promote new or underperforming APIs in the process.” - Anna Tsolakou
+
+Another great way to help your API’s users get started quickly is to provide working demo applications. Developers can use them as a starting point or reference when they’re not sure about the best way forward. [Auth0](https://github.com/auth0-samples) and [Vercel](https://github.com/vercel/vercel/tree/main/examples) both do an excellent job in their GitHub repositories.
+
+Of course, maintaining complete demo applications is even more work than keeping a few code samples in your tutorials up-to-date. But, if you can manage it, they will provide a lot of value to new users.
+
+### 8. “Nice to Have” Content
+
+Finally, if you get to all the points above and you’re _still_ looking for content to help supplement your documentation, here are a few more ideas. I wouldn’t recommend these to companies with a brand new API, but they might be worth pursuing as your API stabilizes or if you have a large enough user base.
+
+- **Error glossary** - Dan Moore mentioned that having a page with solutions to all your API’s error messages is great because developers are very likely to search for these in search engines.
+- **Workshops and training** - These might be nice to have as videos, but if you’re working with enough customers, you might even offer on-site workshops.
+- **Case studies** - While typically used for making the business case for your API, technical case studies can be a good way to show users the end results of adopting your API.
+- **Knowledge base** - Typically, you can share important terms in your docs as they appear, but some companies break them out into glossaries or knowledge bases.
+
+While having accurate, up-to-date documentation is vital, it’s not enough for public-facing APIs. Creating content to support your documentation is a great way to help users solve their own problems, get started faster, and have a better experience when working with your application.
+
+Is there anything I missed? What’s working for your API? I’d love to hear your thoughts, so find me [on Twitter to continue the conversation](https://twitter.com/KarlLHughes).
