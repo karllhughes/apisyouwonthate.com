@@ -1,0 +1,185 @@
+---
+title: Modern API Deployment Options in the Cloud
+subtitle: Creating an API for your backend doesn't need to be complicated. Let's explore some options for bootstrapping an API using modern tools.
+date: "2022-05-04"
+coverImage: planning-api.jpeg
+type: blog
+author: Alexander Karan
+---
+
+How do you deploy your API, and what's the best way to structure it? Front-end frameworks have come a long way in recent years, making it easy to spin up and deploy a website/web app. However, I find the noise caused by many strong opinions sometimes clouds the equal and fantastic progress made on letting developers quickly deploy an API. I'm going to cover a few ways you can build and deploy an API to get your MVP into the hands of your users as quickly as possible. I will approach these deployments from the mindset of building a REST API, as I find this is the most accessible format when thinking about structure and deployments.
+
+## Don't build one from scratch
+
+Getting features, demos, and MVPs into users' hands is more important than the tech stack, language or processes you use. Users don't care how you built it; they care about the features and how well it works. [Firebase](https://firebase.google.com/) has come on in leaps and bounds over the last few years and allows you to knock together a backend for your API quickly. Time and time again, I see people building out an API for simple CRUD operations. Don't make your life difficult. Why build and maintain a whole backend for simple operations? Firebase also allows for a more complex setup giving you the ability to write cloud functions which respond to changes, and run code based on data changes in the database made by your front-end. If you're looking for an open-source alternative to Firebase, [Supabase](https://supabase.com/) is a great companion. Plus, they have a great tag line: `Create a backend in less than 2 minutes.`
+
+Another tool to deploy backends with hardly any code is [AWS Amplify](https://aws.amazon.com/amplify/). You are given tools for authentication and data storage, serving web pages, and connecting to other AWS services. Amplify also comes with a nifty setup they call Studio, allowing you to manage app users and edit content. 
+
+There are some great tools out there for putting together backends. Managing dev ops, servers, and other backend infrastructure can be a pain sometimes. Assess if there is a need to put together a full-fledge backend/API before starting. We don't all need to be Stripe 😉
+
+
+## Deploy on the Edge 
+
+Edge computing has me excited; so many cool things are happening in this space. Deploying an API on edge is like writing serverless functions, with the main difference being you deploy to the edge network, and they tend to run on top of the V8 JavaScript runtime. I love this approach as you get to write endpoints as functions and forget about everything else. 
+
+There are a few providers in this space. One of the most notable is [Cloudflare Workers](https://workers.cloudflare.com/), and you can write in Rust, C, and C++, not just JavaScript. They have some great examples of starter projects to get you going,
+
+They also have an excellent course on [building a serverless API with Cloudflare Workers on EggHead](https://egghead.io/courses/build-a-serverless-api-with-cloudflare-workers-d67ca551).
+
+I also love [Deno Deploy](https://deno.com/deploy), a one-click deploy service for [Deno](https://deno.land/). It allows you to instantly deploy JavaScript on the edge every time you push code to Github. Forget servers, forget vendor lock-in and push JavaScript all the livelong day.
+
+This is an example of how simple it can be to deploy a Rest API. I have set up a single route using [Oak](https://oakserver.github.io/oak/) (an HTTP framework for Deno) that returns an estimated carbon footprint for the provided electricity consumption. 
+
+
+```js
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+
+const port = 3011;
+
+const router = new Router();
+router.get("/electricity", (ctx) => {
+  const factor = 0.759;
+
+  const kwh = Number(ctx.request.url.searchParams.get("kwh"));
+  if (kwh) {
+    const carbon = kwh * factor;
+    const inTonnes = carbon / 1000;
+    ctx.response.body = JSON.stringify({
+      carbon: inTonnes,
+      unit: "tCO2e",
+    });
+  } else {
+    ctx.response.status = 400;
+    ctx.response.body = JSON.stringify({
+      error: {
+        message: "kWh have not been supplied in the query",
+      },
+    });
+  }
+});
+
+const app = new Application();
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+app.addEventListener("listen", () =>
+  console.log(`Listening on http://localhost:${port}`)
+);
+await app.listen({ port });
+``` 
+
+[Full Deno Code Example](https://github.com/AlexanderKaran/electricity-calculator)
+
+To deploy with Deno Deploy, you need to sign up here and make sure you have committed your API to Github. Then connect Deno Deploy to your Github account once you sign up, select the correct repository, select the entry file and then you're all good to go. Any changes, push code to the main branch, and they go live. All PRs created in the repository will come with a deploy preview URL.
+
+You can check out my demo API in full here.
+
+Change the query to your electricity consumption in kWh to get your estimated footprint. 
+
+The question of how to structure your projects is the next hurdle, and this is where breaking them down into microservices would be essential. For example, for this project, I could point to a subdomain, "calculator.alexanderkaran.com", and build out more functionality for working out the footprint for gas or water usage. Each function could be at a different subroute, i.e. "/gas" or "/water"; however, If I wanted to build functionality for testing appliance efficiency. I would create this as a whole new project and point a new subdomain at it, for example, "appliances.alexanderkaran.com". 
+
+Another great part of Deno Deploy is keeping all the services in one repo is easy; you point each project to a specific folder only the code imported in that folder gets deployed. Deno and Deno Deploy make it easy to share code, create a shared folder in the mono-repo and import the code; that's it, no third party sharing system and no private npm modules.
+
+## Serverless Functions
+
+Serverless functions share a lot with edge functions, but you usually code in Node rather than a V8 browser runtime. However, they can have a cold start, meaning the code does not run the second it's called, unlike edge functions which happen straight away. Many providers offer serverless functions, but we will focus on [AWS Lambda](https://aws.amazon.com/lambda/) as it is one of the most common. 
+
+Lambda functions are used for many different solutions, but they need to be paired with an API Gateway when building an API. It turns out AWS have a service for that, too 😉. When creating Lambda functions in the AWS console, they offer options to connect an endpoint in a new or existing [API Gateway](https://aws.amazon.com/api-gateway/), making setup a breeze. If you are used to building monoliths and everything in one place, this can seem confusing. However, it simply boils down to your API Gateway containing all your routes, and each Lambda function is the controller for the route.
+
+Before we dive deeper into how this works, let's look at how Lambda functions are structured. I have stolen one of the AWS HTTP templates for updating [DynamoDB](https://aws.amazon.com/dynamodb/):
+
+
+```js
+const AWS = require('aws-sdk');
+
+const dynamo = new AWS.DynamoDB.DocumentClient();
+
+/**
+ * Demonstrates a simple HTTP endpoint using API Gateway. You have full
+ * access to the request and response payload, including headers and
+ * status code.
+ *
+ * To scan a DynamoDB table, make a GET request with the TableName as a
+ * query string parameter. To put, update, or delete an item, make a POST,
+ * PUT, or DELETE request respectively, passing in the payload to the
+ * DynamoDB API as a JSON body.
+ */
+exports.handler = async (event, context) => {
+    //console.log('Received event:', JSON.stringify(event, null, 2));
+
+    let body;
+    let statusCode = '200';
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        switch (event.httpMethod) {
+            case 'DELETE':
+                body = await dynamo.delete(JSON.parse(event.body)).promise();
+                break;
+            case 'GET':
+                body = await dynamo.scan({ TableName: event.queryStringParameters.TableName }).promise();
+                break;
+            case 'POST':
+                body = await dynamo.put(JSON.parse(event.body)).promise();
+                break;
+            case 'PUT':
+                body = await dynamo.update(JSON.parse(event.body)).promise();
+                break;
+            default:
+                throw new Error(`Unsupported method "${event.httpMethod}"`);
+        }
+    } catch (err) {
+        statusCode = '400';
+        body = err.message;
+    } finally {
+        body = JSON.stringify(body);
+    }
+
+    return {
+        statusCode,
+        body,
+        headers,
+    };
+};
+``` 
+
+[AWS Lambda Snippet](https://gist.github.com/AlexanderKaran/666d7a80e92b7f87c4f81f47211a6145)
+
+As you see here, the function responded to an event and accessed the HTTP method inside to see what type of request it was. Personally, the biggest hurdle I had when using serverless functions or edge computing was how there were no req, res and next functions like I was used to in ExpressJS. Thankfully, though, there are many ways to import frameworks you're used to into Lambda. You also do not have to code in Node; other languages such as Python and Java are on offer too.
+
+Setting up serverless functions with an API Gateway can be done super quickly using the AWS console, but a more extensive API with many endpoints would be time-consuming to set this up way. Enter tools like [ClaudiaJS](https://www.claudiajs.com/) and [Serverless](https://www.serverless.com/).
+
+Claudia allows you to easily set up, deploy, and update code to AWS Lambda, making development and automating releases a breeze. If you want even more capabilities, check out Serverless. It makes deploying serverless functions to AWS easier, allowing you to access and deploy complete AWS services outside of Lambda. Serverless goes even further and has setups for Google Cloud Functions and Azure Functions. 
+
+Setting up an API made of serverless functions can be tricky the first time, so remember API Gateway for your routes and serverless functions for your controllers.
+
+## Serverless Containers
+
+Lastly, we come to serverless containers. I have used Docker containers myself for five years, and I love them. It's great to build something locally, and it runs the same on the server or any other computer that uses it. Need something to be running all the time? Can't afford to deal with cold starts on your API requests or be limited by serverless functions memory or timeout limits? Then containers are for you.
+
+Most people tend to reach for Kubernetes or spin up their servers, install Docker, and deploy their images onto the server. These options will tend to be overkill unless you are running extensive backend infrastructure, which, let's be honest, is not all of us. Though, if you are deploying across multiple cloud providers, Kubernetes might be for you. I like to focus on features and quality, not infrastructure, config and deployments. AWS services ECS and ECR are great for this.
+
+ECR is a repository for uploading your Docker containers, and ECS spins up each container. You connect them to API Gateway or an Application Load Balancer to expose your API to the outside world.
+
+To set up your ECS deployment, you create a task for the docker image, defining setups such as memory and ports. You then create a cluster in ECS and create a Service for each Task. Services are responsible for auto-scaling Tasks based on traffic or memory usage, spinning up new versions when replacing the docker image and exposing the image to the outside world. Setting up ECS does take a while the first time, but after the setup, you add in code pipelines from AWS to auto-deploy updated code when pushing to your Git repository.
+
+After setting up your Cluster, you connect it to the outside world in a few different ways. One approach is to connect it to an Application Load Balancer and set up rules in Load Balancer to connect different URL routes to each service. I usually have a few services running in a cluster. For example, my last Cluster contained the following services:
+
+**Measure Service:**
+My service for handling carbon calculations and tracking consumption and cost of utilities. It was connected to the load balancer, and any request that came through "myapi.com/measure" was sent here.
+
+**Image Service:**
+My service for handling image uploads and processing. It was connected to the load balancer, and any request that came through "myapi.com/image" was sent here.
+
+**Notifications Service:**
+The service for sending emails and push notifications but not connected to the Load Balancer. The other services can call it as they're all on the same VPC (Virtual Private Network), which means I did not need to write the same notification code in the Image or Measure Service.
+
+AWS has some overviews on setting up ECS and what you can connect it to.
+
+If you are looking for a more in-depth tutorial on deploying a Node app from scratch, you can check out this [tutorial by Raphael](https://dev.to/raphaelmansuy/deploy-a-docker-app-to-aws-using-ecs-3i1g).
+
+## In Summary
+
+While each option here deserves its own blog post to cover its entire setup, benefits, and quirks, you at least have a good overview of what is available. I love the advancement of serverless and not having to think about servers at all. Serverless functions, and new kids on the block like Cloudflare Workers, means we are close to never having to think about servers or backend configs again. It's great to focus on code to fix problems, which gets tested, reviewed and deployed the second your PR gets approved in Github. If you have not tried serverless or edge functions, you should try them for your next API.

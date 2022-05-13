@@ -69,8 +69,9 @@ ${turndownService.turndown(job.description)}`;
     // arbitrarily putting d- in front of job titles for dynamically loaded jobs
     // this will be ignored in gitignore
     const fileNameTemplate = `${job.frontmatter.title}-${job.frontmatter.company}-${job.frontmatter.id}`;
+
     const newFilename = `${slugify(fileNameTemplate, {
-      remove: /[*+~.()\/'"?!:@,]/g,
+      remove: /[*+~.()\/'"?!:@,\[\]\\\#]/g,
       lower: true,
     })}.mdx`;
 
