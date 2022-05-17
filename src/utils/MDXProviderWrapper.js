@@ -135,13 +135,13 @@ const NextOptimizedImage = (props) => (
 );
 
 const UnorderedListComponent = ({ children, ...rest }) => (
-  <UnorderedList {...rest} stylePosition={'inside'} mb="1rem" ml={0}>
+  <UnorderedList {...rest} stylePosition={'outside'} ml="1rem" mb="1rem">
     {children}
   </UnorderedList>
 );
 
 const OrderedListComponent = ({ children, ...rest }) => (
-  <OrderedList {...rest} stylePosition={'inside'} mb="1rem" ml={0}>
+  <OrderedList {...rest} stylePosition={'outside'} ml="1rem" mb="1rem">
     bois{children}
   </OrderedList>
 );
