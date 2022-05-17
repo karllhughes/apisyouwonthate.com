@@ -150,7 +150,8 @@ const AuthorPage = ({ author, posts }) => {
           <Stack>
             {posts?.length > 0 && (
               <Heading as="h2" mt="2rem">
-                {posts.length} Articles from {name}
+                {posts.length} {posts.length === 1 ? 'Article' : 'Articles'}{' '}
+                from {name}
               </Heading>
             )}
             <SimpleGrid minChildWidth="300px" spacing={8}>
